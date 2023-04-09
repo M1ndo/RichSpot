@@ -1,0 +1,48 @@
+[project]
+name = "richspot"
+description = "Add discord rich presence from ncspot"
+version = "1.0.0"
+keywords = ["Spotify", "Spotify Rich Presence", "Rich Presence", "Ncspot", "Ncspot Rich Presence", "Discord", "Discord Rich Presence"]
+authors = [
+    { name = "Younes Ben El", email = "ybenel@duck.com" }
+]
+dependencies = [
+    "pypresence",
+    "requests",
+    "PyYaml"
+]
+readme = "README.org"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+classifiers = [
+    "License :: OSI Approved :: GNU License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+[project.urls]
+Documentation = "https://github.com/m1ndo/RichSpot"
+Source = "https://github.com/m1ndo/RichSpot"
+
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[project.scripts]
+richspot = "richspot:run"
+
+[tool.pyright]
+include = ["."]
+exclude = ["**/__pycache__",]
+defineConstant = { DEBUG = true }
+venv = "venv"
+
+reportMissingImports = true
+# reportMissingTypeStubs = false
+reportGeneralTypeIssues = false
+
+pythonVersion = "3.10"
+pythonPlatform = "Linux"

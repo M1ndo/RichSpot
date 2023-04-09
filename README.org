@@ -1,0 +1,32 @@
+* RichSpot
+** [[https://github.com/hrkfdn/ncspot][Ncspot]] discord rich presence add-on
+Since *ncspot* doesn't implement spotify connect, we cannot share our listening activity in discord's rich presence.
+Thus using *RichSpot* makes it possible to do.
+
+[[img:imgs/example.png][Example Image]]
+
+** Installing / Running RichSpot
+*** Through PyPi
+#+begin_src bash
+pip install richspot
+#+end_src
+*** Manually
+#+begin_src bash
+pip install -r requirements.txt
+pip install . --user
+#+end_src
+*** Running
+#+begin_src shell
+richspot & # Run in the background
+#+end_src
+** Requirements
+*** How to obtain client id and authorization token?
++ Go to discord developers [[https://discord.com/developers/applications/][page]].
++ Create an application with a custom name.
++ Get *application id* in generation info tab.
++ Optionally upload a cover image for rich presence invite.
+*Authorization Token* is used to upload and delete song cover assets.
++ Open developers tools (Inspect Elements) (F12)
+[[img:imgs/auth_token.png][auth token]]
+*** WARNING ⚠
+Do not share any keys with anyone unless you want to lose your account.

@@ -3,7 +3,7 @@
 Since *ncspot* doesn't implement spotify connect, we cannot share our listening activity in discord's rich presence.
 Thus using *RichSpot* makes it possible to do.
 
-[[img:imgs/example.png][Example Image]]
+[[file:imgs/example.png]]
 
 ** Installing / Running RichSpot
 *** Through PyPi
@@ -27,6 +27,8 @@ richspot & # Run in the background
 + Optionally upload a cover image for rich presence invite.
 *Authorization Token* is used to upload and delete song cover assets.
 + Open developers tools (Inspect Elements) (F12)
-[[img:imgs/auth_token.png][auth token]]
+
+[[file:imgs/auth_token.png]]
+
 *** WARNING ⚠
 Do not share any keys with anyone unless you want to lose your account.

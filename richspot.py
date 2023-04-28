@@ -132,4 +132,3 @@ def run():
         except Exception as e:
             print(f"Error: {e}")
             continue
-getmusic()

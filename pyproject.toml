@@ -1,7 +1,7 @@
 [project]
 name = "richspot"
 description = "ncspot discord rich presence"
-version = "1.0.0"
+version = "1.0.1"
 keywords = ["Spotify", "Spotify Rich Presence", "Rich Presence", "Ncspot", "Ncspot Rich Presence", "Discord", "Discord Rich Presence", "Spotify Connect"]
 authors = [
     { name = "Younes Ben El", email = "ybenel@duck.com" }

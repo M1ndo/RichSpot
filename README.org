@@ -5,6 +5,9 @@ Thus using *RichSpot* makes it possible to do.
 
 [[file:imgs/example.png]]
 
+** Assets Notice
+Assets will not be visible until they're cached this is a limitation of =discord=.
+It will take atleast 10-15 min before they're visible.
 ** Installing / Running RichSpot
 *** Through PyPi
 #+begin_src bash

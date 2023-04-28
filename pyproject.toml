@@ -1,8 +1,8 @@
 [project]
 name = "richspot"
-description = "Add discord rich presence from ncspot"
+description = "ncspot discord rich presence"
 version = "1.0.0"
-keywords = ["Spotify", "Spotify Rich Presence", "Rich Presence", "Ncspot", "Ncspot Rich Presence", "Discord", "Discord Rich Presence"]
+keywords = ["Spotify", "Spotify Rich Presence", "Rich Presence", "Ncspot", "Ncspot Rich Presence", "Discord", "Discord Rich Presence", "Spotify Connect"]
 authors = [
     { name = "Younes Ben El", email = "ybenel@duck.com" }
 ]
@@ -11,12 +11,13 @@ dependencies = [
     "requests",
     "PyYaml"
 ]
-readme = "README.org"
+readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
 classifiers = [
-    "License :: OSI Approved :: GNU License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",

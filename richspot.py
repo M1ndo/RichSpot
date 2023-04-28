@@ -2,22 +2,33 @@
 from pypresence import Presence
 from pathlib import Path
 import requests, datetime, json
-import socket, base64, yaml
+import socket, base64
 
-config_file = Path("~/.config/richspot.yml").expanduser()
+config_file = Path("~/.config/richspot.json").expanduser()
+pods_file = Path("~/.config/richspot_pods.json").expanduser()
 socket_file = Path("~/.cache/ncspot/ncspot.sock").expanduser().as_posix()
 
 if not config_file.exists():
     config_file.touch()
+    pods_file.touch()
     tk = input("[+]: Enter Client ID: ")
     uk = input("[+]: Enter Authorization Token: ")
     with open(config_file, 'w') as config:
         data = {'client_id': tk, 'user_token': uk}
-        yaml.dump(data, config)
+        json.dump(data, config)
 
-with open(config_file, 'r') as f:
-    config = yaml.safe_load(f)
+def read_file(file):
+    try:
+        with open(file, 'r') as filer:
+            return json.load(filer)
+    except Exception:
+        return {}
 
+def write_file(file, data):
+    with open(file, 'w') as filer:
+        json.dump(data, filer)
+
+config = read_file(config_file)
 client_id = str(config['client_id'])
 user_token = config['user_token']
 RPC = Presence(client_id)
@@ -56,27 +67,52 @@ def image_asset(link, title):
             requests.delete(assets_url+f"/{assets['id']}", headers=headers)
             image_asset(assets_url, title)
 
+def check_pod(url):
+    """Check if podcast cover image is repeatable."""
+    pod_data = read_file(pods_file)
+    ep_data = {url.split("/")[-1]: url}
+    if not pod_data:
+        pod_data = {"purls": []}
+        pod_data['purls'].append(url)
+        pod_data.update(ep_data)
+        write_file(pods_file, pod_data)
+        image_asset(url, url.split("/4")[-1])
+    else:
+        if url not in pod_data["purls"]:
+            pod_data["purls"].append(url)
+            pod_data.update(ep_data)
+            write_file(pods_file, pod_data)
+            image_asset(url, url.split("/4")[-1])
+    return url.split('/')[-1]
+
 def getmusic():
     """ Connect to ncspot and get metadata and update rich presence """
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.connect(socket_file)
     while True:
-        data = sock.recv(1024)
+        data = sock.recv(4096)
         song_info = json.loads(data.decode())
         try:
-            mode = [mode for mode in song_info["mode"].keys()][0]
-        except AttributeError:
-            mode = song_info["mode"]
-        title = song_info["playable"]["title"]
-        artists = song_info["playable"]["artists"]
-        album = song_info["playable"]["album"]
+            mode = list(song_info["mode"].keys())[0]
+        except Exception:
+            mode = song_info.get("mode", "Stopped")
+        type_track = song_info['playable']['type']
         cover_url = song_info["playable"]["cover_url"]
-        cover_img = title.replace(" ", "").lower()
-        url = song_info["playable"]["url"]
+        url = song_info["playable"]["uri"]
         duration = song_info["playable"]["duration"]
-        details = f"{title}"
-        state = f"By {artists[0]}\nAlbum: {album}"
-        image_asset(cover_url, title)
+        if type_track != "Episode":
+            title = song_info["playable"]["title"]
+            artists = song_info["playable"]["artists"]
+            album = song_info["playable"]["album"]
+            details = title
+            state = f"By {artists[0]}\nAlbum: {album}"
+            cover_img = title.replace(" ", "").lower()
+            image_asset(cover_url, title)
+        else:
+            title = song_info['playable']['name']
+            details = "Podcast"
+            state = title
+            cover_img = check_pod(cover_url)
 
         if mode == "Playing":
             time_start = song_info["mode"]["Playing"]['secs_since_epoch']
@@ -96,3 +132,4 @@ def run():
         except Exception as e:
             print(f"Error: {e}")
             continue
+getmusic()

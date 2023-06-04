@@ -11,7 +11,7 @@ It will take atleast 10-15 min before they're visible.
 ** Installing / Running RichSpot
 *** Through PyPi
 #+begin_src bash
-pip install richspot
+pip install --upgrade richspot
 #+end_src
 *** Manually
 #+begin_src bash

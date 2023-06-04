@@ -33,7 +33,6 @@ client_id = str(config['client_id'])
 user_token = config['user_token']
 RPC = Presence(client_id)
 RPC.connect()
-list_covers = []
 
 def image_asset(link, title):
     """ Upload / Delete Image to discord assets """
@@ -44,6 +43,7 @@ def image_asset(link, title):
     }
     assets = requests.get(assets_url, headers=headers)
     assets_list = json.loads(assets.content.decode())
+    cover_names = [asset['name'] for asset in assets_list]
     image_b64 = requests.get(link)
     image_b64 = base64.b64encode(image_b64.content).decode()
     remove_chars = ",.: '"
@@ -53,36 +53,51 @@ def image_asset(link, title):
         'image': f"data:image/png;base64,{image_b64}",
         'type': "1"
     }
+    to_delete = remove_dups(assets_list)
+    if to_delete:
+        for item in to_delete:
+            requests.delete(assets_url+f"/{item}", headers=headers)
     # delete eall assets
     # for asset in assets_list:
     #     requests.delete(assets_url+f"/{asset['id']}", headers=headers)
-    if len(assets_list) <= 300:
-        if not any(asset['name'] == img_title for asset in assets_list) and not any(img_title == img_c for img_c in list_covers):
-            list_covers.append(img_title)
-            upload_image = requests.post(assets_url, headers=headers, json=image_data)
-            # print(upload_image.content)
+    if len(assets_list) != 300:
+        if img_title not in cover_names:
+            requests.post(assets_url, headers=headers, json=image_data)
     else:
         last_assets = assets_list[-10:]
         for assets in last_assets:
             requests.delete(assets_url+f"/{assets['id']}", headers=headers)
-            image_asset(assets_url, title)
+        image_asset(link, title)
 
-def check_pod(url):
-    """Check if podcast cover image is repeatable."""
-    pod_data = read_file(pods_file)
-    ep_data = {url.split("/")[-1]: url}
+def remove_dups(assets: list) -> list:
+    """ Find and removes duplicates a FIX for older versions before >1.2 """
+    name_to_assets = {}
+    to_delete = []
+    for asset in assets:
+        name = asset['name']
+        if name in name_to_assets:
+            name_to_assets[name].append(asset)
+        else:
+            name_to_assets[name] = [asset]
+    for assets in name_to_assets.values():
+        if len(assets) > 1:
+            n1 = assets[0]['id']
+            for i, asset in enumerate(assets):
+                if i != 0 and asset['id'] != n1:
+                    to_delete.append(asset['id'])
+    return to_delete
+
+def check_url(url, pod_data, title=''):
+    """ Check if podcast/song cover image is already uploaded."""
+    if not title: title = url.split("/4")[-1]
     if not pod_data:
-        pod_data = {"purls": []}
-        pod_data['purls'].append(url)
-        pod_data.update(ep_data)
-        write_file(pods_file, pod_data)
-        image_asset(url, url.split("/4")[-1])
+            pod_data = {"purls": [url]}
+            image_asset(url, title)
     else:
         if url not in pod_data["purls"]:
             pod_data["purls"].append(url)
-            pod_data.update(ep_data)
-            write_file(pods_file, pod_data)
-            image_asset(url, url.split("/4")[-1])
+            image_asset(url, title)
+    write_file(pods_file, pod_data)
     return url.split('/')[-1]
 
 def getmusic():
@@ -100,6 +115,7 @@ def getmusic():
         cover_url = song_info["playable"]["cover_url"]
         url = song_info["playable"]["uri"]
         duration = song_info["playable"]["duration"]
+        pod_data = read_file(pods_file)
         if type_track != "Episode":
             title = song_info["playable"]["title"]
             artists = song_info["playable"]["artists"]
@@ -107,12 +123,12 @@ def getmusic():
             details = title
             state = f"By {artists[0]}\nAlbum: {album}"
             cover_img = title.replace(" ", "").lower()
-            image_asset(cover_url, title)
+            check_url(cover_url, pod_data, title=title)
         else:
             title = song_info['playable']['name']
             details = "Podcast"
             state = title
-            cover_img = check_pod(cover_url)
+            cover_img = check_url(cover_url, pod_data)
 
         if mode == "Playing":
             time_start = song_info["mode"]["Playing"]['secs_since_epoch']
@@ -120,7 +136,6 @@ def getmusic():
             end_time += datetime.timedelta(milliseconds=duration)
             end_time = int(end_time.timestamp())
             RPC.update(details=details, state=state, start=time_start, end=end_time, join=url, large_image=cover_img, small_image=cover_img, large_text="Deez Nuts")
-
         else:
             RPC.update(details=details+" (Paused/Stopped)", state=state, join=url, large_image=cover_img, small_image=cover_img, large_text="Deez Nuts")
 

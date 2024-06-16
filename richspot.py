@@ -2,11 +2,11 @@
 from pypresence import Presence
 from pathlib import Path
 import requests, datetime, json
-import socket, base64
+import socket, base64, os
 
 config_file = Path("~/.config/richspot.json").expanduser()
 pods_file = Path("~/.config/richspot_pods.json").expanduser()
-socket_file = Path("~/.cache/ncspot/ncspot.sock").expanduser().as_posix()
+socket_file = Path(f"/run/user/{os.getuid()}/ncspot/ncspot.sock").expanduser().as_posix()
 
 if not config_file.exists():
     config_file.touch()

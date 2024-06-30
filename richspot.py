@@ -135,9 +135,9 @@ def getmusic():
             end_time = datetime.datetime.fromtimestamp(time_start)
             end_time += datetime.timedelta(milliseconds=duration)
             end_time = int(end_time.timestamp())
-            RPC.update(details=details, state=state, start=time_start, end=end_time, join=url, large_image=cover_img, small_image=cover_img, large_text="Deez Nuts")
+            RPC.update(details=details, state=state, start=time_start, end=end_time, join=url, large_image=cover_img, large_text="Deez Nuts")
         else:
-            RPC.update(details=details+" (Paused/Stopped)", state=state, join=url, large_image=cover_img, small_image=cover_img, large_text="Deez Nuts")
+            RPC.update(details=details+" (Paused/Stopped)", state=state, join=url, large_image=cover_img, large_text="Deez Nuts")
 
 def run():
     """ Run Continuously and don't stop """

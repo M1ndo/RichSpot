@@ -123,7 +123,6 @@ def getmusic():
             details = title
             state = f"By {artists[0]}\nAlbum: {album}"
             cover_img = cover_url
-            # check_url(cover_url, pod_data, title=title) # not sure what this does, it's not assigned to anything.
         else:
             title = song_info['playable']['name']
             details = "Podcast"

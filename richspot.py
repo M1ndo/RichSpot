@@ -122,8 +122,7 @@ def getmusic():
             album = song_info["playable"]["album"]
             details = title
             state = f"By {artists[0]}\nAlbum: {album}"
-            cover_img = title.replace(" ", "").lower()
-            check_url(cover_url, pod_data, title=title)
+            cover_img = cover_url
         else:
             title = song_info['playable']['name']
             details = "Podcast"
